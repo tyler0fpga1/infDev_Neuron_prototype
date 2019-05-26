@@ -1,5 +1,7 @@
-
-
+//Random Float -1 to 1 [limits] 
+//by Tyler-0__FPGA-1
+//@ https://dev.azure.com/FPGA-always-wins/_git/infDev_Neural-Network
+//rev (alpha) .02v
 #pragma  once
 #include <iostream>
 #include <math.h>
