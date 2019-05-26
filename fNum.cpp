@@ -37,23 +37,23 @@ float fRand() {
 			countToTen = 0;
 			size[1] = 0;
 		}
-		size[1] = +Num();
+		size[1] = Num(); // generate a new number to size 1
 		if (size[0] > size[1])
 		{
-			size[2] = size[0] / size[1];
-			size[1] = size[0];
+			size[2] = size[0] / size[1]; // get float result of staticRand / varRand
+			size[1] = size[0]; //done! Not needed here though
 		}
-		size[1] = Num();
+		size[1] = Num();// regenerate/overwrite size 1 with a ran num
 		if (size[0] > size[1])
 		{
-			size[3] = size[0] / size[1];
-			size[1] = size[0];
+			size[3] = size[0] / size[1]; //gets the floating point result
+			size[1] = size[0]; // done! lets the next if statment know.
 		}
 		//asign pos/neg
 		if ((size[0] == size[1])) //this will only be true after both if statements above run
 		{
 			compVal = Num();
-			if (size[2] > compVal) { size[4] = size[3] / size[2]; }
+			if (size[2] > compVal) { size[4] = size[3] / size[2]; } //if static rand is 
 			if (size[2] < compVal) { size[4] = size[2] / size[3]; }
 			if ((size[4] > -1) & (size[4] < 1) & (size[4] != 0))
 			{
