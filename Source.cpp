@@ -16,7 +16,7 @@ master is gitHub
 
 			Trident layers pays after all!
 
-			rev -.05v test
+			rev -.05v
 */
 //#############################################################|
 
