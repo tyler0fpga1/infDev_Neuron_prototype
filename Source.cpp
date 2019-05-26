@@ -1,5 +1,7 @@
 #pragma  once
 /*
+origin is azure
+master is gitHub
 	ITJ
 	may 21 2019
 	NeuralNet Prototype
@@ -14,7 +16,7 @@
 
 			Trident layers pays after all!
 
-			rev -.05v
+			rev -.05v test
 */
 //#############################################################|
 
