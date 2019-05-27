@@ -13,6 +13,7 @@
 #include "fNum.h"
 //||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 #pragma once
+
 double  seed = std::chrono::system_clock::now().time_since_epoch().count();
 std::mt19937 Num(seed);
 volatile float size[6]; //(this is really 5:0... because c++.)
@@ -22,7 +23,7 @@ unsigned int countToTen = 0;
 /****NUMBER GENERATION****************************************/
 
 float fRand() {
-
+	std::cout << " F - R A N D! Generating your perfect number.... \n";
 	fNumCounter++;
 
 	size[0] = Num() - fNumCounter; //random Number 1. Basically a random seed

@@ -129,6 +129,9 @@
   <ItemGroup>
     <ClInclude Include="fNum.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="trainingData.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

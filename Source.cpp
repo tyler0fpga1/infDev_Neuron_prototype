@@ -16,7 +16,7 @@ master is gitHub
 
 			Trident layers pays after all!
 
-			rev version  1.0a
+			rev version  1.1a
 */
 //#############################################################|
 
@@ -120,6 +120,7 @@ unsigned TrainingData::getTargetOutputs(vector<double>& targetOutputVals)
 	return targetOutputVals.size();
 }
 
+
 //~~~~~~x~~x~~~~x~~~~~x~~~x~~~x~~~x~~~~x~~~~~x~~~x~~x~~~~xx~~~xcp
 
 //||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -138,19 +139,19 @@ typedef vector<Neuron> Layer;
 class Neuron 
 { //if it's const it dosnt modify the obj
 public:
-		Neuron(unsigned numOutputs, unsigned myIndex);
-		void setOutputVal(double val) { m_outputVal = val; }
-		double getOutputVal(void) const { return m_outputVal; }
-		void feedForward(const Layer& prevLayer);
-		void calcOutputGradients(double targetVal);
-		void calcHiddenGradients(const Layer& nextLayer);
-		void updateInputWeights(Layer& prevLayer);
+	Neuron(unsigned numOutputs, unsigned myIndex);
+	void setOutputVal(double val) { m_outputVal = val; }
+	double getOutputVal(void) const { return m_outputVal; }
+	void feedForward(const Layer& prevLayer);
+	void calcOutputGradients(double targetVal);
+	void calcHiddenGradients(const Layer& nextLayer);
+	void updateInputWeights(Layer& prevLayer);
 private:
-		static double eta;   // [0.0..1.0] overall net training rate
-		static double alpha; // [0.0..n] multiplier of last weight change (momentum)
-		static double transferFunction(double x);
-		static double transferFunctionDerivative(double x);
-		static double randomWeight(void) { return rand() / double(RAND_MAX); }
+	static double eta;   // [0.0..1.0] overall net training rate
+	static double alpha; // [0.0..n] multiplier of last weight change (momentum)
+	static double transferFunction(double x);
+	static double transferFunctionDerivative(double x);
+		static double randomWeight(void) { return fRand(); }
 		double sumDOW(const Layer& nextLayer) const;
 		double m_outputVal;
 		vector<Connection> m_outputWeights;
@@ -162,7 +163,7 @@ double Neuron::eta = 0.15;    // overall net learning rate, [0.0..1.0]
 double Neuron::alpha = 0.5;   // momentum, multiplier of last deltaWeight, [0.0..1.0]
 
 
-void Neuron::updateInputWeights(Layer &prevLayer)
+void Neuron::updateInputWeights(Layer& prevLayer)
 {
 	// the weights to be updated are in the connection container
 	// in the neruons in the preceding layer
@@ -180,33 +181,35 @@ void Neuron::updateInputWeights(Layer &prevLayer)
 
 	for (unsigned n = 0; n < prevLayer.size(); n++)
 	{
-		Neuron& neuron = prevLayer[n];
-		double oldDeltaWeight = neuron.m_outputWeights[m_myIndex].deltaWeight;
-		//.....................
-		double newDeltaWeight =
-			// Individiual input, magnified by the gradient and train rate:
-			eta
-			* neuron.getOutputVal()
-			* m_gradient
-			// add momemntum = a fraction of the prev delta weight (alpha)
-			+ alpha
-			* oldDeltaWeight;
+		for (unsigned n = 0; n < prevLayer.size(); ++n) {
+			Neuron& neuron = prevLayer[n];
+			double oldDeltaWeight = neuron.m_outputWeights[m_myIndex].deltaWeight;
+			//.....................
+			double newDeltaWeight =
+				// Individiual input, magnified by the gradient and train rate:
+				eta
+				* neuron.getOutputVal()
+				* m_gradient
+				// add momemntum = a fraction of the prev delta weight (alpha)
+				+ alpha
+				* oldDeltaWeight;
 
-		neuron.m_outputWeights[m_myIndex].deltaWeight = newDeltaWeight;
-		neuron.m_outputWeights[m_myIndex].weight += newDeltaWeight;
+			neuron.m_outputWeights[m_myIndex].deltaWeight = newDeltaWeight;
+			neuron.m_outputWeights[m_myIndex].weight += newDeltaWeight;
+		}
 	}
-
 }
-
-
-double Neuron::sumDOW(const Layer& nextLayer) const
+double Neuron::sumDOW(const Layer & nextLayer) const
 {
-	double sum = 0.0;
-	// sum contributions of the erros at the node we feed
-	for (unsigned n = 0; n < nextLayer.size() - 1; ++n) {
-		sum += m_outputWeights[n].weight * nextLayer[n].m_gradient;
-	}
-	return sum;
+		double sum = 0.0;
+
+		// Sum our contributions of the errors at the nodes we feed.
+
+		for (unsigned n = 0; n < nextLayer.size() - 1; ++n) {
+			sum += m_outputWeights[n].weight * nextLayer[n].m_gradient;
+		}
+
+		return sum;
 }
 void Neuron::calcHiddenGradients(const Layer& nextLayer)
 { //figure out an error delta by the sum of the diravatives
@@ -233,7 +236,8 @@ double Neuron::transferFunctionDerivative(double x)
 	return 1.0 - x * x;
 }
 
-Neuron::Neuron(unsigned numOutputs, unsigned myIndex) //neruon consatructor
+
+Neuron::Neuron(unsigned numOutputs, unsigned myIndex)//neruon consatructor
 {	//c is for connections
 	for (unsigned c = 0; c < numOutputs; c++)
 	{
@@ -267,7 +271,7 @@ class Net
 	public:
 		Net(const vector<unsigned> &topology);
 		void feedForward (const vector<double> &inputVals ); //get 'inputVal by refrence to a vector of doubles instead of copy and without changing anything
-		void backProp    (const vector<double> &targetVals); //this is just a happy little sammich isnt it?
+		void backProp(const vector<double>& targetVals);  //this is just a happy little sammich isnt it?
 		void getResults  (		vector<double> &resultVals) const; //note the location of const here! 
 		double getRecentAverageError(void) const { return m_recentAverageError; }
 	private:
@@ -279,8 +283,7 @@ class Net
 //  |~ CREATING NET
 //  |
 /***V*********************************************************/
-double Net::m_recentAverageSmoothingFactor = 100.0; // Number of training samples to average over
-
+double Net::m_recentAverageSmoothingFactor = 100.0; // Number of training samples to average over4
 void Net::getResults(vector<double>& resultVals) const
 {
 	resultVals.clear();
@@ -289,7 +292,6 @@ void Net::getResults(vector<double>& resultVals) const
 		resultVals.push_back(m_layers.back()[n].getOutputVal());
 	}
 }
-
 
 
 
@@ -343,12 +345,11 @@ void Net::backProp(const vector<double>& targetVals)
 	Layer& outputLayer = m_layers.back();
 	m_error = 0.0;
 	//............
-	for (unsigned n = 0; n < outputLayer.size() - 1; n++)
-	{
+	for (unsigned n = 0; n < outputLayer.size() - 1; ++n) {
 		double delta = targetVals[n] - outputLayer[n].getOutputVal();
 		m_error += delta * delta;
 	}
-	m_error /= outputLayer.size() - 1; //get average error ^2
+	m_error /= outputLayer.size() - 1;//get average error ^2
 	m_error = sqrt(m_error);           //RootMeanSquared
 	//...................................
 	//Implement a recent avg measurement:
@@ -361,7 +362,7 @@ void Net::backProp(const vector<double>& targetVals)
 		outputLayer[n].calcOutputGradients(targetVals[n]);
 	}
 	//calc output gradients (on hidden layers)
-	for (unsigned layerNum = m_layers.size() - 1; layerNum > 0; layerNum--)
+	for (unsigned layerNum = m_layers.size() - 2; layerNum > 0; layerNum--)
 	{
 		Layer& hiddenLayer = m_layers[layerNum];
 		Layer& nextLayer = m_layers[layerNum + 1];
@@ -390,12 +391,12 @@ void Net::backProp(const vector<double>& targetVals)
 
 void showVectorVals(string label, vector<double>& v)
 {
-	std::cout << label << " ";
+	cout << label << " ";
 	for (unsigned i = 0; i < v.size(); ++i) {
-		std::cout << v[i] << " ";
+		cout << v[i] << " ";
 	}
 
-	std::cout << std::endl;
+	cout << endl;
 }
 
 /*******end of net.*****************************************/
@@ -403,7 +404,7 @@ void showVectorVals(string label, vector<double>& v)
 int main()
 {
 	//test cp~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	TrainingData trainData("/tmp/trainingData.txt");
+	TrainingData trainData("trainingData.txt");
 
 	// e.g., { 3, 2, 1 }
 	vector<unsigned> topology;
@@ -416,7 +417,7 @@ int main()
 
 	while (!trainData.isEof()) {
 		++trainingPass;
-		std::cout << std::endl << "Pass " << trainingPass;
+		cout << endl << "Pass " << trainingPass;
 
 		// Get new input data and feed it forward:
 		if (trainData.getNextInputs(inputVals) != topology[0]) {
@@ -437,11 +438,11 @@ int main()
 		myNet.backProp(targetVals);
 
 		// Report how well the training is working, average over recent samples:
-		std::cout << "Net recent average error: "
+		cout << "Net recent average error: "
 			<< myNet.getRecentAverageError() << endl;
 	}
 
-	std::cout << endl << "Done" << endl;
+	cout << endl << "Done" << endl;
 	//test cp~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	/*
